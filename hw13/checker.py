@@ -41,7 +41,10 @@ class Bs:
             self.books.pop(bookId)
 
     def getNum(self, bookId):
-        return self.books[bookId]
+        if self.contain(bookId):
+            return self.books[bookId]
+        else:
+            return 0
 
     def contain(self, bookId):
         return self.books.__contains__(bookId)
@@ -70,7 +73,13 @@ class Bro:
             self.books.pop(bookId)
 
     def getNum(self, bookId):
-        return self.books[bookId]
+        if self.contain(bookId):
+            return self.books[bookId]
+        else:
+            return 0
+
+    def contain(self, bookId):
+        return self.books.__contains__(bookId)
 
 
 class Appointment:
@@ -113,7 +122,10 @@ class Ao:
             self.books.pop(bookId)
 
     def getNum(self, bookId):
-        return self.books[bookId]
+        if self.contain(bookId):
+            return self.books[bookId]
+        else:
+            return 0
 
     def addAppointment(self, appointment):
         if self.appointments.get(appointment.getPersonId()) == None:
@@ -185,7 +197,8 @@ class Person:
 
     def containC(self, bookId):
         return self.Cbooks.__contains__(bookId)
-
+    def contain(self, bookId):
+        return self.Bbooks.__contains__(bookId) or self.Cbooks.__contains__(bookId)
 
 def processOpen(outList, j, bs, bro, ao):
     assert outList[j].split()[0].isdigit()
@@ -275,9 +288,13 @@ def processBorrowed(outList, j, bs, bro, ao, persons):
         return
     person = persons[personId]
     if person.isContainB() and bookId[0] == 'B':
+        bs.subBook(bookId)
+        bro.addBook(bookId)
         assert result[1] == line_blocks[1]
         return
     if bookId[0] == 'C' and person.containC(bookId):
+        bs.subBook(bookId)
+        bro.addBook(bookId)
         assert result[1] == line_blocks[1]
         return
     person.addBook(bookId)
@@ -297,6 +314,10 @@ def processReturned(outList, j, bs, bro, ao, persons):
         assert result[1] == line_blocks[1]
         return
     person = persons[personId]
+    if person.contain(bookId) == False:
+        assert result[0] == line_blocks[1]
+        bro.addBook(bookId)
+        return
     person.subBook(bookId)
     bro.addBook(bookId)
     assert result[0] == line_blocks[1]
@@ -331,7 +352,9 @@ def processPicked(outList, j, bs, bro, ao, persons):
     personId = line_blocks[2]
     if persons.get(personId) == None:
         persons[personId] = Person(personId)
-    assert ao.getNum(bookId) > 0
+    if ao.getNum(bookId) == 0:
+        assert result[1] == line_blocks[1]
+        return
     if bookId[0] == 'A':
         assert result[1] == line_blocks[1]
         return
@@ -355,7 +378,6 @@ def check(outList, bs, bro, ao, opList):
     j = 0
     persons = {}
     for i in range(len(opList)):
-        person = persons.get('22377982')
         op = opList[i]
         if op.getOpName() == 'OPEN':
             j = processOpen(outList, j, bs, bro, ao)
@@ -405,8 +427,8 @@ def getSome(data_list):
 
 
 if __name__ == '__main__':
-    data_name = 'data.txt'
-    file_name = sys.argv[1]
+    data_name = sys.argv[1]
+    file_name = sys.argv[2]
     #################################################################
 
     data_list = open(data_name, 'r').readlines()

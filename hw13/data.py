@@ -11,6 +11,10 @@ def initialBS():
         list = ['A', 'B', 'C']
         book_class = list[random.randint(0, 2)]
         book_uid = random.randint(0, 9999)
+        while f'{book_class}-{book_uid:04d}' in bookList:
+            book_class = list[random.randint(0, 2)]
+            book_uid = random.randint(0, 9999)
+            pass
         bookList.append(f'{book_class}-{book_uid:04d}')
         num = random.randint(1, 10)
         bs[f'{book_class}-{book_uid:04d}'] = num
@@ -28,7 +32,7 @@ def generatePerson():
 
 def generateOp(bookList, personList, bs):
     op_num = random.randint(1, 200)
-    opList = ['borrowed', 'returned', 'queried', 'ordered', 'picked','CLOSE']
+    opList = ['borrowed', 'returned', 'queried', 'ordered', 'picked', 'CLOSE']
     beginDate = date.today()
     canReturn = {}
     canPick = {}
@@ -40,7 +44,7 @@ def generateOp(bookList, personList, bs):
             print(f'[{my_date}] CLOSE')
             continue
         if flag == 0:
-            dateaddList = [1,2,5,6,7]
+            dateaddList = [1, 2, 5, 6, 7]
             date_add = random.randint(0, 4)
             my_date = my_date + timedelta(days=dateaddList[date_add])
             print(f'[{my_date}] OPEN')
@@ -59,7 +63,8 @@ def generateOp(bookList, personList, bs):
             continue
         if opList[opIndex] == 'borrowed':
             print(f'[{my_date}] {personList[personIndex]} borrowed {bookList[bookIndex]}')
-            if bs[bookList[bookIndex]] > 0 and haveBorrowed.get(personList[personIndex]) == None and bookList[bookIndex][0] != 'A':
+            if bs[bookList[bookIndex]] > 0 and haveBorrowed.get(personList[personIndex]) == None and \
+                    bookList[bookIndex][0] != 'A':
                 bs[bookList[bookIndex]] -= 1
                 haveBorrowed[personList[personIndex]] = bookList[bookIndex]
             continue
@@ -72,7 +77,8 @@ def generateOp(bookList, personList, bs):
             print(f'[{my_date}] {personList[personIndex]} ordered {bookList[bookIndex]}')
             if bookList[bookIndex][0] == 'A':
                 continue
-            if haveBorrowed.get(personList[personIndex]) != None and haveBorrowed.get(personList[personIndex])[0] != bookList[bookIndex]:
+            if haveBorrowed.get(personList[personIndex]) != None and haveBorrowed.get(personList[personIndex])[0] != \
+                    bookList[bookIndex]:
                 if haveBorrowed.get(personList[personIndex])[0] == 'B' and bookList[bookIndex][0] == 'B':
                     continue
                 canPick[personList[personIndex]] = bookList[bookIndex]
@@ -82,8 +88,10 @@ def generateOp(bookList, personList, bs):
                 print(f'[{my_date}] {personList[personIndex]} picked {canPick[personList[personIndex]]}')
                 canPick.pop(personList[personIndex])
 
+
 def getBookList():
     return bookList
+
 
 if __name__ == '__main__':
     bookList, bs = initialBS()
