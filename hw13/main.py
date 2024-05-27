@@ -7,8 +7,9 @@ if __name__ == '__main__':
     jar2 = 'hw13.jar'
     check_name1 = 'output1.txt'
     check_name2 = 'output2.txt'
+    itration = 100
 ########################################################
-    my_list = list(range(100))
+    my_list = list(range(itration))
     # 创建一个tqdm对象，传入迭代次数
     pbar = tqdm(total=len(my_list))
     # 在循环中迭代列表，并更新进度条
